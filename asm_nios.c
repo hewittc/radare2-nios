@@ -13,7 +13,7 @@ static RStrBuf *buf_global = NULL;
 static ut8 bytes[2];
 
 static int nios_buffer_read_memory(bfd_vma address, bfd_byte *byte, ut32 len, disassemble_info *info) {
-	memcpy(byte, bytes, len);
+	memcpy (byte, bytes, len);
 	return 0;
 }
 
@@ -27,7 +27,7 @@ static void nios_memory_error(int status, bfd_vma address, disassemble_info *inf
 
 static void nios_print_address(bfd_vma address, disassemble_info *info) {
 	if (buf_global) {
-		r_strbuf_appendf (buf_global, "0x%08"PFMT64x, (ut64) address);
+		r_strbuf_appendf (buf_global, "0x%08" PFMT64x, (ut64)address);
 	}
 }
 
@@ -37,9 +37,9 @@ static int nios_fprintf(void *stream, const char *format, ...) {
 	}
 
 	va_list args;
-	va_start(args, format);
+	va_start (args, format);
 	r_strbuf_vappendf (buf_global, format, args);
-	va_end(args);
+	va_end (args);
 
 	return 0;
 }
@@ -50,12 +50,12 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	}
 
 	buf_global = &op->buf_asm;
-	memcpy(bytes, buf, 2);
+	memcpy (bytes, buf, 2);
 
-	struct disassemble_info info = {0};
+	struct disassemble_info info = { 0 };
 
 	info.disassembler_options = "";
-	info.mach = a->bits == 16 ? MACH_NIOS16 : MACH_NIOS32;
+	info.mach = a->bits == 16? MACH_NIOS16: MACH_NIOS32;
 	info.buffer = bytes;
 	info.read_memory_func = &nios_buffer_read_memory;
 	info.symbol_at_address_func = &nios_symbol_at_address;
@@ -65,10 +65,10 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	info.fprintf_func = &nios_fprintf;
 	info.stream = stdout;
 
-	op->size = print_insn_nios((bfd_vma) a->pc, &info);
+	op->size = print_insn_nios ((bfd_vma)a->pc, &info);
 
 	if (op->size == -1) {
-		r_strbuf_set(&op->buf_asm, " (data)");
+		r_strbuf_set (&op->buf_asm, " (data)");
 	}
 
 	return op->size;
