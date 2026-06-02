@@ -1,0 +1,1 @@
+option('plugindir', type: 'string', value: '', description: 'Radare2 plugin install directory (defaults to prefix/lib/radare2/version/plugins)')\
