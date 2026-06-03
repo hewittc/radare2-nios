@@ -98,6 +98,7 @@ static char *regs(RArchSession *as) {
 	r_strbuf_appendf (sb, "=SP  o6\n");
 	r_strbuf_appendf (sb, "=LR  o7\n");
 	r_strbuf_appendf (sb, "=BP  i6\n");
+	r_strbuf_appendf (sb, "=SN  g0\n"); // Silence warning, syscalls use TRAP
 	r_strbuf_appendf (sb, "=A0  i0\n");
 	r_strbuf_appendf (sb, "=A1  i1\n");
 	r_strbuf_appendf (sb, "=A2  i2\n");
