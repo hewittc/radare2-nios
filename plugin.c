@@ -144,21 +144,21 @@ static char *regs(RArchSession *as) {
 static int archinfo(RArchSession *as, ut32 q) {
 	switch (q) {
 	case R_ARCH_INFO_MINOP_SIZE:
-		return 2;
+		return CGEN_MIN_INSN_SIZE;
 	case R_ARCH_INFO_MAXOP_SIZE:
-		return 2;
+		return CGEN_MAX_INSN_SIZE;
 	case R_ARCH_INFO_INVOP_SIZE:
-		return 2;
+		return CGEN_MIN_INSN_SIZE;
 	case R_ARCH_INFO_CODE_ALIGN:
-		return 2;
+		return CGEN_MIN_INSN_SIZE;
 	case R_ARCH_INFO_DATA_ALIGN:
-		return 1;
+		return 1; // Byte-granular data access
 	case R_ARCH_INFO_WODST:
-		return 0;
+		return 0; // Destination regs are not write-only
 	case R_ARCH_INFO_ISVM:
-		return 0;
+		return 0; // Not a virtual machine
 	}
-	return 2;
+	return CGEN_MIN_INSN_SIZE;
 }
 
 static void decode_insn(RAnalOp *op) {
@@ -277,7 +277,6 @@ static void decode_insn(RAnalOp *op) {
 	case NIOS_INSN_FILL832:
 		op->type = R_ANAL_OP_TYPE_MOV;
 		break;
-	// IFS?
 	case NIOS_INSN_JMP16:
 	case NIOS_INSN_JMP32:
 		op->type = R_ANAL_OP_TYPE_RJMP;
