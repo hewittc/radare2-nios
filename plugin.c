@@ -575,6 +575,26 @@ static bool decode(RArchSession *as, RAnalOp *op, RArchDecodeMask mask) {
 	return true;
 }
 
+static char *fix_operators(char *mnemonic) {
+	static const char *operators[] = { "xhi(", "xlo(", "hi(", "lo(" };
+
+	// Enable assembling xhi/xlo/hi/lo without '%' prefix to match disassembly
+	for (int i = 0; i < 4; i++) {
+		const char *p = strstr (mnemonic, operators[i]);
+		if (!p) {
+			continue;
+		}
+
+		if (p > mnemonic && *(p - 1) == '%') {
+			break;
+		}
+
+		return r_str_newf ("%.*s%%%s", (int) (p - mnemonic), mnemonic, p);
+	}
+
+	return NULL;
+}
+
 static bool encode(RArchSession *as, RAnalOp *op, RArchEncodeMask mask) {
 	if (!as || !op || !op->mnemonic || !nios || !nios->cgen_cpu) {
 		return false;
@@ -588,8 +608,10 @@ static bool encode(RArchSession *as, RAnalOp *op, RArchEncodeMask mask) {
 	unsigned int insn_buf = 0;
 	char *errmsg = NULL;
 
-	const char *input = op->mnemonic;
+	char *mnemonic = fix_operators (op->mnemonic);
+	const char *input = mnemonic? mnemonic: op->mnemonic;
 	const CGEN_INSN *insn = nios_cgen_assemble_insn (cd, input, &fields, &insn_buf, &errmsg);
+	free (mnemonic);
 	if (!insn) {
 		eprintf ("CGEN encode failed for '%s': %s\n", op->mnemonic, errmsg? errmsg: "unknown");
 		return false;
