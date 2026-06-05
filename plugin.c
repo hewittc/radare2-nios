@@ -1,7 +1,6 @@
 /* nios plugin by hewittc at 2018-2026 */
 
 #include <ctype.h>
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,8 +12,6 @@
 
 #include "gnu/nios-desc.h"
 #include "gnu/nios-opc.h"
-
-extern void cgen_set_parse_operand_fn(CGEN_CPU_DESC, cgen_parse_operand_fn *);
 
 struct nios_info {
 	CGEN_CPU_DESC cgen_cpu;
@@ -578,6 +575,37 @@ static bool decode(RArchSession *as, RAnalOp *op, RArchDecodeMask mask) {
 	return true;
 }
 
+static bool encode(RArchSession *as, RAnalOp *op, RArchEncodeMask mask) {
+	if (!as || !op || !op->mnemonic || !nios || !nios->cgen_cpu) {
+		return false;
+	}
+
+	CGEN_CPU_DESC cd = nios->cgen_cpu;
+	CGEN_FIELDS fields;
+	memset (&fields, 0, sizeof (fields));
+	CGEN_FIELDS_BITSIZE (&fields) = 16;
+
+	unsigned int insn_buf = 0;
+	char *errmsg = NULL;
+
+	const char *input = op->mnemonic;
+	const CGEN_INSN *insn = nios_cgen_assemble_insn (cd, input, &fields, &insn_buf, &errmsg);
+	if (!insn) {
+		eprintf ("CGEN encode failed for '%s': %s\n", op->mnemonic, errmsg? errmsg: "unknown");
+		return false;
+	}
+
+	ut8 bytes[2];
+	bytes[0] = insn_buf & 0xff;
+	bytes[1] = (insn_buf >> 8) & 0xff;
+
+	if (!r_anal_op_set_bytes (op, op->addr, bytes, 2)) {
+		return false;
+	}
+
+	return true;
+}
+
 static bool init(RArchSession *as) {
 	if (!as) {
 		return false;
@@ -600,6 +628,7 @@ static bool init(RArchSession *as) {
 		}
 
 		nios_cgen_init_dis (nios->cgen_cpu);
+		nios_cgen_init_asm (nios->cgen_cpu);
 		cgen_set_parse_operand_fn (nios->cgen_cpu, nios_parse_operand);
 	}
 
@@ -632,6 +661,7 @@ const RArchPlugin r_arch_plugin_nios_gnu = {
 	.init = init,
 	.fini = fini,
 	.decode = decode,
+	.encode = encode,
 };
 
 #ifndef R2_PLUGIN_INCORE
