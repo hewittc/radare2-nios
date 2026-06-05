@@ -1,6 +1,7 @@
 clang-log/
 .cache
 .clang_complete
+.clangd
 .tmp-format
 .#*
 *._d
@@ -148,6 +149,8 @@ libr/flag/d/tags.r2
 CMakeLists.txt
 *.cmake
 cmake-build-*
+# Zed
+.zed/
 # Snap packaging
 /parts
 /prime
