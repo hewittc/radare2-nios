@@ -9,7 +9,7 @@ This plugin recycles ancient toolchain code from Cygnus Solutions' GNUPro Tool S
 ## Features
 
 - Support for both the 16-bit and 32-bit architecture variants
-- A disassembler frontend, wrapping [CGEN](https://sourceware.org/cgen/docs/cgen_1.html) (*Cpu tools GENerator*)
+- Disassembler and assembler frontends, wrapping [CGEN](https://sourceware.org/cgen/docs/cgen_1.html) (*Cpu tools GENerator*)
 - Basic analysis support for different instruction types and execution flow
 
 ## Install via source
