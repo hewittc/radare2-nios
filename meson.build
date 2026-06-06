@@ -5,6 +5,7 @@ project('radare2-nios', 'c',
   meson_version: '>=1.10',
 )
 
+r_asm_dep = dependency('r_asm')
 r_arch_dep = dependency('r_arch')
 r_util_dep = dependency('r_util')
 
@@ -24,6 +25,11 @@ plugin_sources = [
   'gnu/safe-ctype.c'
 ]
 
+pseudo_deps = [r_asm_dep]
+pseudo_sources = [
+  'pseudo.c'
+]
+
 inc_dirs = include_directories('.', 'gnu', 'include')
 
 r2_plugdir = get_option('plugindir')
@@ -35,6 +41,15 @@ shared_module('nios',
   plugin_sources,
   dependencies: plugin_deps,
   include_directories: inc_dirs,
+  install: true,
+  install_dir: r2_plugdir,
+  c_args: ['-fPIC'],
+  name_prefix: ''
+)
+
+shared_module('nios.pseudo',
+  pseudo_sources,
+  dependencies: pseudo_deps,
   install: true,
   install_dir: r2_plugdir,
   c_args: ['-fPIC'],
