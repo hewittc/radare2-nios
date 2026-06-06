@@ -141,7 +141,7 @@ print_i32(CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
 
 ATTRIBUTE_UNUSED static void
 print_i4w(CGEN_CPU_DESC cd, void *dis_info, long value, unsigned int attrs, bfd_vma pc, int length) {
-	char *str;
+	char *str = NULL;
 	disassemble_info *info = (disassemble_info *)dis_info;
 	switch (value) {
 	case CC_Z:
